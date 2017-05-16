@@ -6,3 +6,7 @@ tmp/
 node_modules/
 .vscode/
 .build/*
+**/parts/
+**/stage
+**/prime
+**/*.snap
