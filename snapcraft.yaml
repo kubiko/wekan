@@ -125,11 +125,19 @@ parts:
         source: snap-src
         plugin: dump
 
+    go:
+        plugin: nil
+        prepare: |
+          curl https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz -o go1.9.2.linux-amd64.tar.gz
+          tar -xvf go1.9.2.linux-amd64.tar.gz
+          mv go /usr/local
     caddy:
         plugin: go
         go-importpath: github.com/mholt/caddy
         source: https://github.com/mholt/caddy.git
         source-type: git
         source-commit: 53e117802fedd5915eeb32907873d8786a4b2936
+        after:
+            - go
         prime:
             - bin/caddy
