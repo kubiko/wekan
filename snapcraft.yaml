@@ -66,6 +66,7 @@ apps:
 parts:
     mongodb:
         source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.20.tgz
+        source-type: tar
         plugin: dump
         stage-packages: [libssl1.0.0]
         filesets:
@@ -80,6 +81,7 @@ parts:
 
     wekan:
         source: .
+        source-type: git
         plugin: nodejs
         node-engine: 8.11.3
         node-packages:
@@ -176,7 +178,11 @@ parts:
 
     caddy:
         plugin: dump
-        source: https://caddyserver.com/download/linux/amd64?plugins=http.filter,http.ipfilter,http.realip&license=personal&telemetry=off
+        source:
+          - on amd64: 'https://caddyserver.com/download/linux/amd64?plugins=http.filter,http.ipfilter,http.realip&license=personal&telemetry=off'
+          - on arm64: 'https://caddyserver.com/download/linux/arm64?plugins=http.filter,http.ipfilter,http.realip&license=personal&telemetry=off'
+          - on i386:  'https://caddyserver.com/download/linux/386?plugins=http.filter,http.ipfilter,http.realip&license=personal&telemetry=off'
+          - on armhf: 'https://caddyserver.com/download/linux/arm7?plugins=http.filter,http.ipfilter,http.realip&license=personal&telemetry=off'
         source-type: tar
         organize:
           caddy: bin/caddy
