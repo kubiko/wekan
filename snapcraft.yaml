@@ -1,6 +1,4 @@
 name: wekan
-version: 0
-version-script: git describe --tags |  cut -c 2-
 summary: The open-source kanban
 description: |
    Wekan is an open-source and collaborative kanban board application.
@@ -12,6 +10,7 @@ description: |
 
 confinement: strict
 grade: stable
+adopt-info: wekan
 
 architectures:
   - amd64
@@ -37,37 +36,53 @@ apps:
     wekan:
         command: wekan-control
         daemon: simple
-        plugs: [network, network-bind]
+        plugs:
+            - network
+            - network-bind
 
     mongodb:
         command: mongodb-control
         daemon: simple
-        plugs: [network, network-bind]
+        plugs:
+            - network
+            - network-bind
+            - network-observe
 
     caddy:
         command: caddy-control
         daemon: simple
-        plugs: [network, network-bind]
+        plugs:
+            - network
+            - network-bind
+
 
     help:
         command: wekan-help
 
     database-backup:
         command: mongodb-backup
-        plugs: [network, network-bind]
+        plugs:
+            - network
+            - network-bind
 
     database-list-backups:
         command: ls -al $SNAP_COMMON/db-backups/
 
     database-restore:
         command: mongodb-restore
-        plugs: [network, network-bind]
+        plugs:
+            - network
+            - network-bind
 
 parts:
     mongodb:
-        source: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1604-3.2.22.tgz
+        source:
+          - to amd64: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1804-4.2.8.tgz
+          - to arm64: https://fastdl.mongodb.org/linux/mongodb-linux-aarch64-ubuntu1804-4.2.8.tgz
+          - to s390x: https://fastdl.mongodb.org/linux/mongodb-linux-s390x-ubuntu1804-4.2.8.tgz
         plugin: dump
-        stage-packages: [libssl1.0.0]
+        stage-packages:
+            - libssl1.0.0
         filesets:
             mongo:
                 - usr
@@ -81,7 +96,8 @@ parts:
     wekan:
         source: .
         plugin: nodejs
-        node-engine: 12.18.0
+        nodejs-package-manager: npm
+        nodejs-version: 12.18.0
         node-packages:
             - node-gyp
             - node-pre-gyp
@@ -100,6 +116,7 @@ parts:
         stage-packages:
             - libfontconfig1
         override-build: |
+            snapcraftctl set-version $(git describe --tags |  cut -c 2-)
             echo "Cleaning environment first"
             rm -rf ~/.meteor ~/.npm /usr/local/lib/node_modules
             # Create the OpenAPI specification
